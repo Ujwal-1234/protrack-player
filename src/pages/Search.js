@@ -15,14 +15,14 @@ const Search = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">Search</h1>
+    <div className="p-4 flex items-center justify-center">
+      <h1 className="text-3xl font-bold inline">Search</h1>
       <input
         type="text"
         placeholder="Search..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
+        className=" p-2 w-full lg:w-1/2 ml-4 border rounded"
       />
       <button onClick={handleSearch} className="p-2 bg-blue-500 text-white rounded">Search</button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">

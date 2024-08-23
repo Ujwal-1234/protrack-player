@@ -1,21 +1,52 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-export const AuthContext = createContext();
+// Create AuthContext
+const AuthContext = createContext();
 
+// AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [isAuth, setIsAuth] = useState(() => {
+    // Retrieve authentication state from local storage
+    const token = localStorage.getItem('pro-token');
+    return !!token;
+  });
 
-  const login = (userData) => {
-    setUser(userData);
+  useEffect(() => {
+    // Update authentication state when local storage changes
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('pro-token');
+      setIsAuth(!!token);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Explicit login function
+  const login = (token) => {
+    localStorage.setItem('pro-token', token);
+    setIsAuth(true);
   };
 
+  // Explicit logout function
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('pro-token');
+    setIsAuth(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Custom hook to use auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
